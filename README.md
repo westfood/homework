@@ -9,7 +9,7 @@ Show the ability to automate the deployment of dockerized application Infrastruc
 - Ansible
 - Python or shell
 
-## Task
+## Task
 1. Download regularly (e.g. daily / hourly) some dataset from the free data provider. If you down know any, choose from:
 a. https://github.com/CSSEGISandData/COVID-19/
 b. https://openweathermap.org/current
