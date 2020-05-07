@@ -1,0 +1,2 @@
+---
+dataset_filename: "{{ lookup('pipe', 'date -d \"1 day ago\" +%m-%d-%Y') }}.csv"

@@ -1,0 +1,2 @@
+# This is just for getting rid of ansible python auto discovery warning.
+ansible_python_interpreter: /usr/bin/python3

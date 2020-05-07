@@ -1,6 +1,27 @@
 # Homework
 
-## Goal
+## Initial thinking
+- Fargate with scheduled task
+  - docker
+    - getting dataset
+      - optional: check file hash before putting to S3, if some file has been updated
+    - parse for latest data
+    - update table in S3
+    - optional: S3 as https via Cloudfront / update cache afterwards (maybe S3 could do https out of box)
+
+- Operation
+  - Fargate + task defintion via terraform
+    - check complexity of cloudformation versus Terraform
+
+- Actualy best solution would be python in lambda for getting URL and publishing to S3. But then there would be no place for Ansible and not much place for dockerization.
+
+## Documentation
+
+
+
+## Homework definition
+
+### Goal
 Show the ability to automate the deployment of dockerized application Infrastructure and tools:
 
 - AWS EC2
@@ -9,7 +30,7 @@ Show the ability to automate the deployment of dockerized application Infrastruc
 - Ansible
 - Python or shell
 
-## Task
+### Task
 1. Download regularly (e.g. daily / hourly) some dataset from the free data provider. If you down know any, choose from:
 a. https://github.com/CSSEGISandData/COVID-19/
 b. https://openweathermap.org/current

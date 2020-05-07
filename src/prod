@@ -1,0 +1,6 @@
+---
+# This is simplified way how I deal with group_vars in small projects.
+prod:
+  hosts:
+    localhost:
+  vars:

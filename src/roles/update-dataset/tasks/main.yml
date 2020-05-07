@@ -1,0 +1,33 @@
+---
+- name: "Get daily COVID-19 report from John Hopkins University, but we use previous day as file reference."
+  get_url:
+    url: https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/{{ dataset_filename }}
+    dest: /tmp/{{ dataset_filename }}
+
+- name: "We can do grep, python would be best for data cleanup, but what about ansible module for handling CSV;-)"
+  read_csv:
+    path: /tmp/{{ dataset_filename }}
+    key: Combined_Key
+  register: Region
+
+- debug:
+    msg: 'Region {{ Region.dict.Czechia.Country_Region }} has been last updated on {{Region.dict.Czechia.Last_Update }}.'
+
+# - name: 'Archive dataset to S3'
+#   aws_s3:
+#     bucket: homework
+#     object: /archive/covid-19/{{ dataset_filename }}
+#     src: /tmp/{{ dataset_filename }}
+#     mode: put
+
+- name: 'Create HTML from template.'
+  template:
+    dest: /tmp/covid-19.html
+    src: covid-19.html
+
+# - name: 'Publish Page in S3'
+#   aws_s3:
+#     bucket: homework
+#     object: index.html
+#     src: /tmp/covid-19.html
+#     mode: put
