@@ -7,14 +7,14 @@
 - [Builded artefact rot in Dockerhub](https://hub.docker.com/r/zrudko/homework)
 
 ### Service updates
-Each commit to [github/westfood/homework:master](https://github.com/westfood/homework) triggers Dockerhub to build of [zrudko/homework:latest](https://hub.docker.com/r/zrudko/homework). New build artefact rewrites older ones. To archive previous artefacts we should employ tagging strategy. But it's overkill for this homework.
+Each commit to [github/westfood/homework:master](https://github.com/westfood/homework) triggers Dockerhub to build image [zrudko/homework:latest](https://hub.docker.com/r/zrudko/homework). New build artefact rewrites older ones. To archive previous artefacts we should employ tagging strategy. But it's overkill for this homework.
 
 Fargate will pull new version of image from Dockerhub when task is scheduled.
 
-### Prepare AWS environment for service
-This playbook prepare ECS cluster called **homework-runner** for running dockerized service as a scheduled task. It should be idempotent - so there should be no issue running it again and again. Thus this step could be part deployment pipeline. Secrets would be provided from runner environment (be it jenkins, github actions or whatever.) S3 bucket **homework.itchy.cz** with enabled bucket hosting is created to provide index page for HTTP endpoint and archive of full datasets is created.
+### Prepare AWS environment for service | WIP
+This playbook prepare ECS cluster called **homework-runner** for running dockerized service as a scheduled task every 6 hours. It should be idempotent - so there should be no issue running it again and again. Thus this step could be part deployment pipeline. Secrets would be provided from runner environment (be it jenkins, github actions or whatever.) S3 bucket **homework.itchy.cz** with enabled bucket hosting is created to provide index page for HTTP endpoint and archive of full datasets is created.
 
-- S3 bucket name is: homework.itchy.cz, it's defined via [ansible declaration for production](src/prod)
+- S3 bucket name is: [homework.itchy.cz](http://homework.itchy.cz.s3-website.eu-central-1.amazonaws.com), it's defined via [ansible declaration for production](src/prod)
 - ECS cluster name is defined via [defaults/main.yml for deploy-to-aws role ](src/roles/deploy-to-aws/defaults/main.yml)
 - Task have IAM role which allow it to push to S3 from ECS cluster.
 
@@ -27,24 +27,27 @@ AWS_SECRET_ACCESS_KEY=SECRET
 AWS_REGION=eu-central-1
 ```
 
-### Service for updating dataset
+### Service for updating dataset
 Via running docker image [zrudko/homework:latest]((https://hub.docker.com/r/zrudko/homework)) we get dataset from COVID-19 [repo](https://github.com/CSSEGISandData/COVID-19) maintained by John Hopkins University. It is actually just ansible playbook role [update-dataset](src/roles/update-dataset/tasks/main.yml). Python + boto3 as lambda function would be better approach, but this was very quick and it's DSL approach. Plus I wanted to try way Fargate to runs containers. So Fargate pull and run ```zrudko/homework:latest```. That's it.
+
+I did not add any logic for testing if URL to dataset filename with today's date yeald any HTTP 200. I just use shell date -1 day to get yesterday.
+
+- Services without any arguments should exit 0 ```docker run zrudko/homework:latest``` after fulfilling purpose.
+- It is meant to run as Fargate task which is triggered by cloudwatch event scheduler.
+- AWS credentials to access S3 should be provided by IAM role once service is running as Fargate task.
 - Dockerfile CMD is set to run ```ansible-playbook update-public-page.yaml -i prod```  which will get new dataset, parse it via read_csv module, push it to S3 archive and publish Czechia related data to S3 as HTML.
 - provide argument ```--env-file aws-credentials``` if you want to run service from your computer.
-- AWS credentials to access S3 should be provided by IAM role once service is running as Fargate task.
-- ```docker run zrudko/homework:latest```
-- It is meant to run as Fargate task which is triggered by scheduler.
 - Service is stupid. It's trying to get dataset from previous day. If fails, it should not change published html or archive. There is no error handling.
 
 ### Before going to production
-- If dataset is in Github and owned by 3rd party, we should find good way to monitor repository updates. Maybe using github API for periodical checks and trigger updates based on it. Main issue witn covid-19 repo is we are getting new datasets with delay because of -1 day hack while requesting dataset. I would like to have something like this push based, not polling based.
-- Switch from Fargate with ansible to Lambda function. Run python function when repo is updated.
+- If dataset is in Github and owned by 3rd party, we should find good way to monitor repository updates. Maybe using github API for periodical checks and trigger updates based on it. Main issue with covid-19 repo is we are getting new datasets with delay because of -1 day hack while requesting dataset. Some simple method if dataset filename is not found, then try yesterday could be used. If data would be under our control, push based approach would be best.
+- Switch from Fargate with Ansible to Lambda function. Run python function when repo is updated.
 - Publish HTML via CloudFront to use HTTPS and enjoy caching (and deal with cache invalidations).
 - Build and deployment should be handled by pipeline runner. Secrets should be provided to automation. For my projects I would go with Github actions and build pipelines there. If bitbucket I would go with their service.
 - Test if playbook is able to provide cleanup of AWS resources.
 - Provide tags for billing and inline tags with common resource definitions in operation.
-- Make develop branch and run towards testing environment first. This would require to remove hardcoded CMD for prod group_vars from Dockerfile. I decide about target deployment environment from branch name.
-- Do monitoring of success/failure of task.
+- Make develop branch and run towards testing environment first. This would require to remove hardcoded CMD for prod group_vars from Dockerfile. I usually decide about target environment from branch name.
+- Do monitoring of success/failure of tasks.
 
 ## Initial thoughts before starting work
 Actualy best solution would be python+boto3 in lambda for getting URL and publishing to S3. But then there would be not much place for Ansible and not much place for dockerization. Maybe dockerization would be useful for keeping ansible deployment DSL and lambda function stuff in one place. But I have no experience with Fargate, so I wanted to do solve via Fargate.
