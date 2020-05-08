@@ -44,6 +44,7 @@ Via running docker image [zrudko/homework:latest]((https://hub.docker.com/r/zrud
 - Test if playbook is able to provide cleanup of AWS resources.
 - Provide tags for billing and inline tags with common resource definitions in operation.
 - Make develop branch and run towards testing environment first. This would require to remove hardcoded CMD for prod group_vars from Dockerfile. I decide about target deployment environment from branch name.
+- Do monitoring of success/failure of task.
 
 ## Initial thoughts before starting work
 Actualy best solution would be python+boto3 in lambda for getting URL and publishing to S3. But then there would be not much place for Ansible and not much place for dockerization. Maybe dockerization would be useful for keeping ansible deployment DSL and lambda function stuff in one place. But I have no experience with Fargate, so I wanted to do solve via Fargate.
@@ -88,11 +89,11 @@ Show the ability to automate the deployment of dockerized application Infrastruc
 - Put all your source code in a public git repository (e.g. Github) // [github/westfood/homework:master](https://github.com/westfood/homework)
 - Use Readme.MD file for the documentation (while evaluating we will use it to run the code) // **done**
 - If you find problems, or not implement something, you should mention it there // **I did not used much of shell or Python - is it OK?**
-- You don't need to provide automation for AWS infrastructure (EC2, S3) setup but you should document it // **Done via deploy-to-aws role**
+- You don't need to provide automation for AWS infrastructure (EC2, S3) setup but you should document it // **WIP via deploy-to-aws role, S3 ready, working on handling fargate**
 
 ### Bonus points
 - Replace EC2 with AWS serverless offering // **Does Fargate scheduled tasks counts as serverless?**
 - Document the next steps to make this small app being ready for production // **should be there**
-- Automate even the infrastructure setup (cloudformation, terraform) // **Done via Ansibel and shell**
+- Automate even the infrastructure setup (cloudformation, terraform) // **WIP via Ansible and shell**
 - Create a CI / CD pipelines // **Just CD**
 - Use your imagination and provide more than expected **Not much, let's say HTTPS should be served via Cloudfront, if page would be consumed heavily.**

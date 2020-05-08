@@ -9,18 +9,51 @@
     name: "{{ s3_bucket }}"
     state: "{{ aws_state | default('present') }}"
 
-- name: "It seems ansible is not ready to provide ECS backend for Fargate. Using Shell instead."
-  shell: |
+- name: Create IAM role for executing Fargate tasks
+  iam:
+    iam_type: role
+    name: ecsTaskExecutionRole
+    state: "{{ aws_state | default('present') }}"
+    trust_policy:
+      Version: '2012-10-17'
+      Statement:
+      - Action: sts:AssumeRole
+        Effect: Allow
+        Principal:
+          Service: ecs-tasks.amazonaws.com
 
-- name: 'Create task definition.'
+- name: 'Create Fargate task definition.'
   ecs_taskdefinition:
     family: UpdateDataset
     containers:
     - name: update-covid19-dataset
       essential: true
-      image: "zrudko/westfood:latest"
+      image: "zrudko/homework:latest"
     launch_type: FARGATE
+    task_role_arn:
     cpu: 256
     memory: 512
     state: "{{ aws_state | default('present') }}"
     network_mode: awsvpc
+
+- name: "It seems to me ansible is not ready to provide ECS backend for Fargate via ecs_cluster module. Using Shell instead."
+  shell: |
+    aws ecs create-cluster --cluster-name {{ cluster_name }} --capacity-providers FARGATE_SPOT --region ${AWS_REGION}
+    # sleep 30
+    # ecs wait for cluster is not there, so doing sleep.
+
+    # to_parse=$(aws ecs up --cluster-config homework --ecs-profile homework-profile)
+    # group_id = $(aws ec2 describe-security-groups --filters Name=vpc-id,Values=VPC_ID --region us-west-2)
+
+- name: 'Run Covid-19 dataset update task every 6 hours'
+  cloudwatchevent_rule:
+    name: UpdateCovidDataset
+    state: "{{ aws_state | default('present') }}"
+    schedule_expression: "rate(6 hours)"
+    description: Run task to archive covid-19 dataset and update HTML
+    targets:
+      - id: update-covid19-dataset
+        role_arn:
+        ecs_parameters:
+          task_definition_arn: 
+        arn: arn:aws:lambda:us-east-1:123456789012:function:MyFunction
