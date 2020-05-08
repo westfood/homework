@@ -14,13 +14,13 @@ Fargate will pull new version of image from Dockerhub when task is scheduled (ev
 ### Prepare AWS environment for service | WIP
 This playbook prepare ECS cluster called **homework-runner** for running dockerized service as a scheduled task every 6 hours. It should be idempotent - so there should be no issue running it again and again. Thus this step could be part deployment pipeline. Secrets would be provided from runner environment (be it jenkins, github actions or whatever.) S3 bucket **homework.itchy.cz** with enabled bucket hosting is created to provide index page for HTTP endpoint and archive of full datasets is created.
 
-I had to define Scheduled task via Cloudwatch event via console, doing research in proper way to define it.  
+I had to define Scheduled task via Cloudwatch event via console, doing research in proper way to define it programatically.
 
 - S3 bucket name is: [homework.itchy.cz](http://homework.itchy.cz.s3-website.eu-central-1.amazonaws.com), it's defined via [ansible declaration for production](src/prod)
 - ECS cluster name is defined via [defaults/main.yml for deploy-to-aws role ](src/roles/deploy-to-aws/defaults/main.yml)
 - Task have IAM role which allow it to push to S3 from ECS cluster.
 
-#### Deployment from local machine
+#### Deployment to AWS from local machine
 - ```docker run --env-file aws-credentials zrudko/homework:latest ansible-playbook deploy.yaml -i prod```
 - provide env-file with your credentials such as, use filename *aws-credentials* ideally as it's contained in gitignore to mitigate hasty commits of plaintext credentials.
 ```bash
@@ -38,8 +38,10 @@ I did not add any logic for testing if URL to dataset filename with today's date
 - It is meant to run as Fargate task which is triggered by cloudwatch event scheduler.
 - AWS credentials to access S3 should be provided by IAM role once service is running as Fargate task.
 - Dockerfile CMD is set to run ```ansible-playbook update-public-page.yaml -i prod```  which will get new dataset, parse it via read_csv module, push it to S3 archive and publish Czechia related data to S3 as HTML.
-- provide argument ```--env-file aws-credentials``` if you want to run service from your computer.
 - Service is stupid. It's trying to get dataset from previous day. If fails, it should not change published html or archive. There is no error handling.
+
+#### Run service from local machine
+- provide docker run argument ```--env-file aws-credentials``` if you want to run service from your computer.
 
 ### Before going to production
 - If dataset is in Github and owned by 3rd party, we should find good way to monitor repository updates. Maybe using github API for periodical checks and trigger updates based on it. Main issue with covid-19 repo is we are getting new datasets with delay because of -1 day hack while requesting dataset. Some simple method if dataset filename is not found, then try yesterday could be used. If data would be under our control, push based approach would be best.
