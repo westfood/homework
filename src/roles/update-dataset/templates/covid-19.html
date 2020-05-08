@@ -7,7 +7,7 @@
       <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     </head>
     <body>
-      <h1>Latest covid-19 daily {{ Region.dict.Czechia.Country_Region }} stats aggregated by Jonkins Hopkins university.</h1>
+      <h3>Latest covid-19 daily {{ Region.dict.Czechia.Country_Region }} stats aggregated by Jonkins Hopkins university.</h3>
       <ul class="list-group">
         <li class="list-group-item-action active">Used dataset: <a href="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/{{ dataset_filename }}">{{ dataset_filename }}</a></li>
         <li class="list-group-item-action active">Page updated: {{ ansible_date_time.iso8601 }}</li>
