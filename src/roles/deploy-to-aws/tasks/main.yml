@@ -22,6 +22,18 @@
         Principal:
           Service: ecs-tasks.amazonaws.com
 
+- name: Add S3 policy
+  iam_policy:
+    iam_type: role
+    iam_name: ecsTaskExecutionRole
+    state: "{{ aws_state | default('present') }}"
+    policy_name: s3_full_{{ s3_bucket }}
+    policy_json: "{{ lookup( 'template', 's3_full_homework.json') }}"
+
+
+- ecs_taskdefinition_info:
+    task_definition: UpdateDataset
+
 - name: 'Create Fargate task definition.'
   ecs_taskdefinition:
     family: UpdateDataset
@@ -35,6 +47,7 @@
     memory: 512
     state: "{{ aws_state | default('present') }}"
     network_mode: awsvpc
+
 
 - name: "It seems to me ansible is not ready to provide ECS backend for Fargate via ecs_cluster module. Using Shell instead."
   shell: |
@@ -55,5 +68,5 @@
       - id: update-covid19-dataset
         role_arn:
         ecs_parameters:
-          task_definition_arn: 
+          task_definition_arn:
         arn: arn:aws:lambda:us-east-1:123456789012:function:MyFunction
