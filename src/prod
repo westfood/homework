@@ -4,3 +4,4 @@ prod:
   hosts:
     localhost:
   vars:
+    s3_bucket: homework.itchy.cz

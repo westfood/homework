@@ -1,0 +1,6 @@
+- name: "Using localhost for all interactions."
+  hosts: 127.0.0.1
+  connection: local
+  roles:
+    - name: deploy-to-aws
+      # in such simple task i would not prepare role, but it's for sake of showing ansible-fu.

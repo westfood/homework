@@ -1,0 +1,26 @@
+---
+- name: Ensure S3 bucket is ready
+  s3_bucket:
+    name: "{{ s3_bucket }}"
+    state: "{{ aws_state | default('present') }}"
+
+- name: Ensure S3 is ready to serve HTTP
+  s3_website:
+    name: "{{ s3_bucket }}"
+    state: "{{ aws_state | default('present') }}"
+
+- name: "It seems ansible is not ready to provide ECS backend for Fargate. Using Shell instead."
+  shell: |
+
+- name: 'Create task definition.'
+  ecs_taskdefinition:
+    family: UpdateDataset
+    containers:
+    - name: update-covid19-dataset
+      essential: true
+      image: "zrudko/westfood:latest"
+    launch_type: FARGATE
+    cpu: 256
+    memory: 512
+    state: "{{ aws_state | default('present') }}"
+    network_mode: awsvpc

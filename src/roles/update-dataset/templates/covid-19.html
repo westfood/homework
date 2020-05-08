@@ -7,7 +7,7 @@
       <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     </head>
     <body>
-      <h1>Latest covid-19 daily reports aggregated by Jonkins Hopkins university</h1>
+      <h1>Latest covid-19 daily reports aggregated by Jonkins Hopkins university.</h1>
       <ul class="list-group">
         <li class="list-group-item-action active">Used dataset: <a href="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/{{ dataset_filename }}">{{ dataset_filename }}</a></li>
         <li class="list-group-item list-group-item list-group-item-primary">Last update: {{ Region.dict.Czechia.Last_Update }}</li>
@@ -15,7 +15,7 @@
         <li class="list-group-item list-group-item-danger">Confirmed cases: {{ Region.dict.Czechia.Confirmed }}</li>
         <li class="list-group-item list-group-item-dark">Deaths: {{ Region.dict.Czechia.Deaths }}</li>
         <li class="list-group-item list-group-item-success">Recoverd: {{ Region.dict.Czechia.Recovered }}</li>
-        <li class="list-group-item">Active?: {{ Region.dict.Czechia.Active }}</li>
+        <li class="list-group-item">Active: {{ Region.dict.Czechia.Active }}</li>
       </ul>
     </body>
   </html>
