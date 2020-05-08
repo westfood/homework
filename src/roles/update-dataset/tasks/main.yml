@@ -10,9 +10,6 @@
     key: Combined_Key
   register: Region
 
-- debug:
-    msg: 'Region {{ Region.dict.Czechia.Country_Region }} has been last updated on {{Region.dict.Czechia.Last_Update }}.'
-
 - name: 'Archive dataset to S3'
   aws_s3:
     bucket: "{{ s3_bucket }}"
