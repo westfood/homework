@@ -10,13 +10,13 @@
       <h1>Latest covid-19 daily reports aggregated by Jonkins Hopkins university.</h1>
       <ul class="list-group">
         <li class="list-group-item-action active">Used dataset: <a href="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/{{ dataset_filename }}">{{ dataset_filename }}</a></li>
-        <li class="list-group-item list-group-item list-group-item-primary">Page updated: {{ ansible_date_time.iso8601 }}</li>
-        <li class="list-group-item list-group-item list-group-item-primary">Dataset updated: {{ Region.dict.Czechia.Last_Update }}</li>
+        <li class="list-group-item">Page updated: {{ ansible_date_time.iso8601 }}</li>
+        <li class="list-group-item">Dataset updated: {{ Region.dict.Czechia.Last_Update }}</li>
         <li class="list-group-item list-group-item-light">Region: {{ Region.dict.Czechia.Country_Region }}</li>
-        <li class="list-group-item list-group-item-danger">Confirmed cases: {{ Region.dict.Czechia.Confirmed }}</li>
+        <li class="list-group-item">Confirmed cases: {{ Region.dict.Czechia.Confirmed }}</li>
+        <li class="list-group-item list-group-item-danger">Active cases: {{ Region.dict.Czechia.Active }}</li>
         <li class="list-group-item list-group-item-dark">Deaths: {{ Region.dict.Czechia.Deaths }}</li>
         <li class="list-group-item list-group-item-success">Recoverd: {{ Region.dict.Czechia.Recovered }}</li>
-        <li class="list-group-item">Sick: {{ Region.dict.Czechia.Active }}</li>
       </ul>
     </body>
   </html>
