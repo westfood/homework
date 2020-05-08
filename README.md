@@ -7,7 +7,7 @@
 - [Builded artefact rot in Dockerhub](https://hub.docker.com/r/zrudko/homework)
 
 ### Service updates
-Each commit to [github/westfood/homework:master](https://github.com/westfood/homework) triggers Dockerhub to build of [zrudko/homework:latest]((https://hub.docker.com/r/zrudko/homework). New build artefact rewrites older ones. To archive previous artefacts we should employ tagging strategy. But it's overkill for this homework.
+Each commit to [github/westfood/homework:master](https://github.com/westfood/homework) triggers Dockerhub to build of [zrudko/homework:latest](https://hub.docker.com/r/zrudko/homework). New build artefact rewrites older ones. To archive previous artefacts we should employ tagging strategy. But it's overkill for this homework.
 
 Fargate will pull new version of image from Dockerhub when task is scheduled.
 
