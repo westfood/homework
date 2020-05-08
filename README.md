@@ -9,10 +9,12 @@
 ### Service updates
 Each commit to [github/westfood/homework:master](https://github.com/westfood/homework) triggers Dockerhub to build image [zrudko/homework:latest](https://hub.docker.com/r/zrudko/homework). New build artefact rewrites older ones. To archive previous artefacts we should employ tagging strategy. But it's overkill for this homework.
 
-Fargate will pull new version of image from Dockerhub when task is scheduled.
+Fargate will pull new version of image from Dockerhub when task is scheduled (every 6 hours).
 
 ### Prepare AWS environment for service | WIP
 This playbook prepare ECS cluster called **homework-runner** for running dockerized service as a scheduled task every 6 hours. It should be idempotent - so there should be no issue running it again and again. Thus this step could be part deployment pipeline. Secrets would be provided from runner environment (be it jenkins, github actions or whatever.) S3 bucket **homework.itchy.cz** with enabled bucket hosting is created to provide index page for HTTP endpoint and archive of full datasets is created.
+
+I had to define Scheduled task via Cloudwatch event via console, doing research in proper way to define it.  
 
 - S3 bucket name is: [homework.itchy.cz](http://homework.itchy.cz.s3-website.eu-central-1.amazonaws.com), it's defined via [ansible declaration for production](src/prod)
 - ECS cluster name is defined via [defaults/main.yml for deploy-to-aws role ](src/roles/deploy-to-aws/defaults/main.yml)
